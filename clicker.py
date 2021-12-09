@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 # Remove minimums
 pg.PAUSE = 0
 pg.MINIMUM_DURATION = 0
-pg.MINIMUM_SLEEP = 0.01
+pg.MINIMUM_SLEEP = 0.005
 
 # Generates Bezier curve
 def make_curve(start: tuple, end: tuple) -> bz.Curve:
@@ -22,7 +22,7 @@ def make_curve(start: tuple, end: tuple) -> bz.Curve:
     # Unpack co-ordinates
     start_x, start_y = start
     end_x, end_y = end
-    size = np.random.randint(2, 3)
+    size = 2
     
     # Generate a random point between co-ords
     mid_x = sorted(np.random.uniform(min(start_x, end_x), max(start_x, end_x), size = size))
@@ -39,7 +39,7 @@ def make_curve(start: tuple, end: tuple) -> bz.Curve:
 
 
 # Move mouse to location
-def move(x: int, y: int, speed: float = 1, points: float = 20, spread: int = 5) -> None:
+def move(x: int, y: int, speed: float = 1, points: float = 10, spread: int = 3) -> None:
     
     # Normally distribute start & end coords
     curr_x, curr_y = pg.position()
@@ -47,14 +47,14 @@ def move(x: int, y: int, speed: float = 1, points: float = 20, spread: int = 5) 
     rand_y = np.random.normal(y, spread)
 
     # Normally distribute speed
-    rand_speed = np.random.uniform(0.5, speed) * 0.6 * (1/points)
+    rand_speed = np.random.uniform(0.1, speed) * 0.6 * (1/points)
 
     # Easing functions for random choice of mouse movement
     tweens = [pg.easeOutBack, pg.easeOutQuad, pg.easeOutCubic, pg.easeOutExpo, pg.easeInQuad, pg.easeInCubic, pg.easeInExpo]
     
     # Generate and split bezier curve
     curve = make_curve((curr_x, curr_y), (rand_x, rand_y))
-    curve_points = sorted(np.random.uniform(0.01,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     0.99, size = points)) + [1]
+    curve_points = sorted(np.random.uniform(0.01, 0.99, points)) + [1]
     curve_coords = map(curve.evaluate, curve_points)
 
     # Move along the curve
@@ -101,10 +101,9 @@ def bank(col: int, row: int) -> tuple:
     return (base_x + (col - 1) * offset_x, base_y + (row - 1) * offset_y)
 
 def logout():
-    screenWidth, screenHeight = pg.size()
-    switcher_x, switcher_y = (2344 * screenWidth)//2560 , (1372 * screenHeight)//1440
-    thumbs_up_x, thumbs_up_y = (2287 * screenWidth)//2560 , (1072 * screenHeight)//1440
-    logout_x, logout_y = (2341 * screenWidth)//2560 , (1292 * screenHeight)//1440
+    switcher_x, switcher_y = 2344, 1372
+    thumbs_up_x, thumbs_up_y = 2287, 1072
+    logout_x, logout_y = 2341, 1292
 
     # Thumbs up and logout
     move(switcher_x, switcher_y)
@@ -116,8 +115,7 @@ def logout():
 
 def login():
     # Adjust pixels for resolution
-    screenWidth, screenHeight = pg.size()
-    login_x, login_y = (1381 * screenWidth)//2560 , (460 * screenHeight)//1440
+    login_x, login_y = 1381, 460
 
     # Get password from .env file in directory
     load_dotenv()
@@ -134,3 +132,8 @@ def login():
     pg.press("return")
     move(1275, 530)
     pg.leftClick()
+
+start = dt.now()
+move(1280, 720, 0.3)
+end = dt.now()
+print(end-start)
