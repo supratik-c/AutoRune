@@ -22,11 +22,10 @@ def make_curve(start: tuple, end: tuple) -> bz.Curve:
     # Unpack co-ordinates
     start_x, start_y = start
     end_x, end_y = end
-    size = 2
     
     # Generate a random point between co-ords
-    mid_x = sorted(np.random.uniform(min(start_x, end_x), max(start_x, end_x), size = size))
-    mid_y = sorted(np.random.uniform(min(start_y, end_y), max(start_y, end_y), size = size))
+    mid_x = sorted(np.random.uniform(min(start_x, end_x), max(start_x, end_x), size = 2))
+    mid_y = sorted(np.random.uniform(min(start_y, end_y), max(start_y, end_y), size = 2))
 
     # Generate Bezier curve
     nodes = np.asarray([
@@ -34,47 +33,61 @@ def make_curve(start: tuple, end: tuple) -> bz.Curve:
         [start_y] + mid_y + [end_y]
     ])
 
-    curve = bz.Curve(nodes, degree = size + 1)
+    curve = bz.Curve(nodes, degree = 3, copy = False)
     return curve
+
+# Normalize co-ordinates for different screen sizes
+def normalize(x: int, y: int) -> tuple:
+    screen_width, screen_height = pg.size()
+    x = (x * screen_width) // 2560
+    y = (y * screen_height) // 1440
+    return (x, y)
 
 
 # Move mouse to location
-def move(x: int, y: int, speed: float = 1, points: float = 10, spread: int = 3) -> None:
+def move(x: int, y: int, speed: float = 1, points: float = 15, spread: int = 2, movement = "complex") -> None:
     
     # Normally distribute start & end coords
     curr_x, curr_y = pg.position()
-    rand_x = np.random.normal(x, spread) 
-    rand_y = np.random.normal(y, spread)
+    rand_x = round(np.random.normal(x, spread)) 
+    rand_y = round(np.random.normal(y, spread))
 
     # Normally distribute speed
-    rand_speed = np.random.uniform(0.1, speed) * 0.6 * (1/points)
+    rand_speed = np.random.uniform(speed/2, speed) * (1/points)
 
     # Easing functions for random choice of mouse movement
     tweens = [pg.easeOutBack, pg.easeOutQuad, pg.easeOutCubic, pg.easeOutExpo, pg.easeInQuad, pg.easeInCubic, pg.easeInExpo]
     
-    # Generate and split bezier curve
-    curve = make_curve((curr_x, curr_y), (rand_x, rand_y))
-    curve_points = sorted(np.random.uniform(0.01, 0.99, points)) + [1]
-    curve_coords = map(curve.evaluate, curve_points)
+    # Movement type
+    if movement == "complex":
+        # Generate and split bezier curve
+        curve = make_curve((curr_x, curr_y), (rand_x, rand_y))
+        curve_points = sorted(np.random.uniform(0.01, 0.99, points)) + [1]
+        curve_coords = map(np.around, map(curve.evaluate, curve_points))
 
-    # Move along the curve
-    for pos in curve_coords: 
-        next_x, next_y = pos
-        pg.moveTo(next_x, next_y, rand_speed, tween = (np.random.choice(tweens) if next_x == rand_x and next_y == rand_y else pg.linear))
+        # Move along the curve
+        for pos in curve_coords: 
+            next_x, next_y = pos
+            pg.moveTo(next_x, next_y, rand_speed, tween = (np.random.choice(tweens) if (next_x == rand_x and next_y == rand_y) else pg.linear))
+    else:
+        pg.moveTo(rand_x, rand_y, speed, np.random.choice(tweens))
+    
+    # Sleep
+    time.sleep(np.random.uniform(0.05, 0.1))
 
 
 # Select Option 
 def select(option: int) -> None:
 
     # Screen resolution for scaling
-    res_x, res_y = pg.size()
-    x_offset = (10 * res_x)/2560
-    y_offset = (38 * res_y)/1440
-    y_option_offset = (23 * res_y)/1440
+    x_offset, y_offset = normalize(10, 38)
+    res_y = pg.size()[1]
+    y_option_offset = round((23 * res_y)//1440)
 
     # M1 click
     if option == 0:
         pg.leftClick()
+        time.sleep(np.random.uniform(0.05, 0.1))
         return
 
     # M2 Option Select
@@ -82,40 +95,39 @@ def select(option: int) -> None:
     curr_x, curr_y = pg.position()
     rand_x = curr_x + x_offset
     rand_y = curr_y + y_offset + (y_option_offset * (option - 1)) 
-    move(rand_x, rand_y, 0.7, spread = 1)
+    move(rand_x, rand_y, speed = 0.6, spread = 1)
     pg.leftClick()
+    time.sleep(np.random.uniform(0.05, 0.1))
 
 
 # Moves to a specific inventory row & column
-def inventory(row: int, col: int) -> tuple:
-    screenWidth, screenHeight = pg.size()
-    base_x, base_y = (2246 * screenWidth)/2560 , (986 * screenHeight)/1440
-    offset_x, offset_y = (65 * screenWidth)/2560 , (55 * screenHeight)/1440
-    return (base_x + (row - 1) * offset_x, base_y + (col - 1) * offset_y)
+def inventory(col: int, row: int) -> tuple:
+    base_x, base_y = normalize(2246, 986)
+    offset_x, offset_y = normalize(65, 55)
+    return (base_x + (col - 1) * offset_x, base_y + (row - 1) * offset_y)
 
 # Move to a specific bank row & column
 def bank(col: int, row: int) -> tuple:
-    screenWidth, screenHeight = pg.size()
-    base_x, base_y = (814 * screenWidth)/2560 , (163 * screenHeight)/1440
-    offset_x, offset_y = (72 * screenWidth)/2560 , (55 * screenHeight)/1440
+    base_x, base_y = normalize(814, 163)
+    offset_x, offset_y = normalize(72, 55)
     return (base_x + (col - 1) * offset_x, base_y + (row - 1) * offset_y)
 
+
 def logout():
-    switcher_x, switcher_y = 2344, 1372
-    thumbs_up_x, thumbs_up_y = 2287, 1072
-    logout_x, logout_y = 2341, 1292
+    switcher_x, switcher_y = normalize(2344, 1372)
+    logout_x, logout_y = normalize(2341, 1292)
 
     # Thumbs up and logout
     move(switcher_x, switcher_y)
-    select(0)
-    move(thumbs_up_x, thumbs_up_y)
-    select(0)
+    pg.leftClick()
     move(logout_x, logout_y)
-    select(0)
+    pg.leftClick()
+
 
 def login():
-    # Adjust pixels for resolution
-    login_x, login_y = 1381, 460
+    # Co ordinates for login
+    login_x, login_y = normalize(1381, 460)
+    click_x, click_y = normalize(1275, 530)
 
     # Get password from .env file in directory
     load_dotenv()
@@ -123,17 +135,20 @@ def login():
 
     # Login
     move(login_x, login_y)
-    select(0)
-    time.sleep(1)
+    pg.leftClick()
+    time.sleep(np.random.uniform(0.5, 1))
     for letter in pwd:
         pg.typewrite(letter)
-        time.sleep(0.1)
-    time.sleep(1)
+        time.sleep(np.random.uniform(0.1, 0.3))
+    time.sleep(np.random.uniform(0.5, 1))
     pg.press("return")
-    move(1275, 530)
+    time.sleep(np.random.uniform(4, 7))
+    move(click_x, click_y, spread = 10)
     pg.leftClick()
 
-start = dt.now()
-move(1280, 720, 0.3)
-end = dt.now()
-print(end-start)
+
+# Drop item
+def drop():
+    with pg.hold("shift"):
+        pg.leftClick(duration = 0.1)
+        time.sleep(0.1)

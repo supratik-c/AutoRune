@@ -1,4 +1,3 @@
-
 import numpy as np
 import pyautogui as pg
 import clicker as ck
@@ -22,7 +21,7 @@ horn_x, horn_y = ck.inventory(3, 7)
 
 
 # Event Loop - Start with Bank Window open, Unicorn horns in second slot
-for i in range(2):
+for i in range(196):
 
     # Withdraw horns from bank
     ck.move(bank_horn_x, bank_horn_y)
