@@ -5,7 +5,7 @@ import time
 import keyboard as kb
 
 """
-This script will auto make cannonballs at Edgeville. Keep Steel Bars in the second bank slot.
+This script will auto make cannonballs at Edgeville. Kweep Steel Bars in the second bank slot.
 Start at the furnace, orient north, zoom out max, move camera upwards to max, and run.
 """
 

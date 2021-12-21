@@ -1,4 +1,3 @@
-
 import numpy as np
 import pyautogui as pg
 import clicker as ck

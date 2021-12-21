@@ -43,7 +43,7 @@ for i in range(118):
     ck.move(bank_x, bank_y, spread = 2)
     time.sleep(np.random.uniform(0.5, 1)) 
     pg.leftClick()
-    time.sleep(12 + np.random.normal(1, 0.4))
+    time.sleep(8 + np.random.normal(1, 0.4))
 
     # Deposit Rings
     ck.move(rx, ry)
@@ -69,7 +69,7 @@ for i in range(118):
     ck.move(smelter_x, smelter_y, spread = 3)
     time.sleep(np.random.uniform(0.5, 1))
     ck.select(0)
-    time.sleep(14 + np.random.normal(1, 0.4))
+    time.sleep(12 + np.random.normal(1, 0.4))
     ck.move(cx, cy)
     time.sleep(np.random.uniform(0.5, 1))
     ck.select(0)

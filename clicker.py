@@ -45,7 +45,7 @@ def normalize(x: int, y: int) -> tuple:
 
 
 # Move mouse to location
-def move(x: int, y: int, speed: float = 1, points: float = 15, spread: int = 2) -> None:
+def move(x: int, y: int, speed: float = 1, points: float = 15, spread: int = 2, movement = "complex") -> None:
     
     # Normally distribute start & end coords
     curr_x, curr_y = pg.position()
@@ -58,15 +58,22 @@ def move(x: int, y: int, speed: float = 1, points: float = 15, spread: int = 2) 
     # Easing functions for random choice of mouse movement
     tweens = [pg.easeOutBack, pg.easeOutQuad, pg.easeOutCubic, pg.easeOutExpo, pg.easeInQuad, pg.easeInCubic, pg.easeInExpo]
     
-    # Generate and split bezier curve
-    curve = make_curve((curr_x, curr_y), (rand_x, rand_y))
-    curve_points = sorted(np.random.uniform(0.01, 0.99, points)) + [1]
-    curve_coords = map(np.around, map(curve.evaluate, curve_points))
+    # Movement type
+    if movement == "complex":
+        # Generate and split bezier curve
+        curve = make_curve((curr_x, curr_y), (rand_x, rand_y))
+        curve_points = sorted(np.random.uniform(0.01, 0.99, points)) + [1]
+        curve_coords = map(np.around, map(curve.evaluate, curve_points))
 
-    # Move along the curve
-    for pos in curve_coords: 
-        next_x, next_y = pos
-        pg.moveTo(next_x, next_y, rand_speed, tween = (np.random.choice(tweens) if (next_x == rand_x and next_y == rand_y) else pg.linear))
+        # Move along the curve
+        for pos in curve_coords: 
+            next_x, next_y = pos
+            pg.moveTo(next_x, next_y, rand_speed, tween = (np.random.choice(tweens) if (next_x == rand_x and next_y == rand_y) else pg.linear))
+    else:
+        pg.moveTo(rand_x, rand_y, speed, np.random.choice(tweens))
+    
+    # Sleep
+    time.sleep(np.random.uniform(0.05, 0.1))
 
 
 # Select Option 
@@ -80,6 +87,7 @@ def select(option: int) -> None:
     # M1 click
     if option == 0:
         pg.leftClick()
+        time.sleep(np.random.uniform(0.05, 0.1))
         return
 
     # M2 Option Select
@@ -89,6 +97,7 @@ def select(option: int) -> None:
     rand_y = curr_y + y_offset + (y_option_offset * (option - 1)) 
     move(rand_x, rand_y, speed = 0.6, spread = 1)
     pg.leftClick()
+    time.sleep(np.random.uniform(0.05, 0.1))
 
 
 # Moves to a specific inventory row & column
@@ -136,3 +145,10 @@ def login():
     time.sleep(np.random.uniform(4, 7))
     move(click_x, click_y, spread = 10)
     pg.leftClick()
+
+
+# Drop item
+def drop():
+    with pg.hold("shift"):
+        pg.leftClick(duration = 0.1)
+        time.sleep(0.1)

@@ -3,14 +3,12 @@ import time
 import numpy as np
 import pyautogui as pg
 
-# Smelter-to-Bank
-bank_x = 680
-bank_y = 981
+inv_x, inv_y = ck.inventory(2, 1)
 
-# Move to Bank
-with pg.hold("control"):
-    ck.move(1280, 720)
-    time.sleep(np.random.uniform(0.5, 1)) 
-    pg.leftClick()
-    pg.rightClick()
+ck.move(inv_x, inv_y)
+pg.rightClick(duration = 0.3)
+pg.leftClick(duration = 0.3)
+with pg.hold("shift"):
+    pg.leftClick(duration = 0.1)
+    time.sleep(0.8)
 
