@@ -4,7 +4,6 @@ import keyboard as kb
 import time
 import bezier as bz
 import random as rd
-from datetime import datetime as dt
 import os
 from dotenv import load_dotenv
 
@@ -45,15 +44,15 @@ def normalize(x: int, y: int) -> tuple:
 
 
 # Move mouse to location
-def move(x: int, y: int, speed: float = 1, points: float = 15, spread: int = 2, movement = "complex") -> None:
+def move(x: int, y: int, speed: float = 0.4, spread: int = 2, movement = "complex") -> None:
     
     # Normally distribute start & end coords
     curr_x, curr_y = pg.position()
-    rand_x = round(np.random.normal(x, spread)) 
-    rand_y = round(np.random.normal(y, spread))
+    rand_x = np.random.normal(x, spread)
+    rand_y = np.random.normal(y, spread)
 
-    # Normally distribute speed
-    rand_speed = np.random.uniform(speed/2, speed) * (1/points)
+    # Randomise speed
+    speed = np.random.uniform(speed/2, speed)
 
     # Easing functions for random choice of mouse movement
     tweens = [pg.easeOutBack, pg.easeOutQuad, pg.easeOutCubic, pg.easeOutExpo, pg.easeInQuad, pg.easeInCubic, pg.easeInExpo]
@@ -62,8 +61,9 @@ def move(x: int, y: int, speed: float = 1, points: float = 15, spread: int = 2, 
     if movement == "complex":
         # Generate and split bezier curve
         curve = make_curve((curr_x, curr_y), (rand_x, rand_y))
-        curve_points = sorted(np.random.uniform(0.01, 0.99, points)) + [1]
-        curve_coords = map(np.around, map(curve.evaluate, curve_points))
+        curve_points = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+        curve_coords = map(curve.evaluate, curve_points)
+        rand_speed = speed * 0.1
 
         # Move along the curve
         for pos in curve_coords: 
@@ -80,9 +80,8 @@ def move(x: int, y: int, speed: float = 1, points: float = 15, spread: int = 2, 
 def select(option: int) -> None:
 
     # Screen resolution for scaling
-    x_offset, y_offset = normalize(10, 38)
-    res_y = pg.size()[1]
-    y_option_offset = round((23 * res_y)//1440)
+    x_offset, y_offset = np.random.uniform(-50, 50), 38
+    y_option_offset = 23
 
     # M1 click
     if option == 0:
@@ -95,21 +94,21 @@ def select(option: int) -> None:
     curr_x, curr_y = pg.position()
     rand_x = curr_x + x_offset
     rand_y = curr_y + y_offset + (y_option_offset * (option - 1)) 
-    move(rand_x, rand_y, speed = 0.6, spread = 1)
+    move(rand_x, rand_y, speed = 0.2, spread = 1, movement = "simple")
     pg.leftClick()
     time.sleep(np.random.uniform(0.05, 0.1))
 
 
 # Moves to a specific inventory row & column
 def inventory(col: int, row: int) -> tuple:
-    base_x, base_y = normalize(2246, 986)
-    offset_x, offset_y = normalize(65, 55)
+    base_x, base_y = 2246, 986
+    offset_x, offset_y = 65, 55
     return (base_x + (col - 1) * offset_x, base_y + (row - 1) * offset_y)
 
 # Move to a specific bank row & column
 def bank(col: int, row: int) -> tuple:
-    base_x, base_y = normalize(814, 163)
-    offset_x, offset_y = normalize(72, 55)
+    base_x, base_y = 814, 163
+    offset_x, offset_y = 72, 55
     return (base_x + (col - 1) * offset_x, base_y + (row - 1) * offset_y)
 
 
