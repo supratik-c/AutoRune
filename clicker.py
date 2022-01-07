@@ -44,15 +44,12 @@ def normalize(x: int, y: int) -> tuple:
 
 
 # Move mouse to location
-def move(x: int, y: int, speed: float = 0.4, spread: int = 2, movement = "complex") -> None:
+def move(x: int, y: int, speed: float = 0.8, spread: int = 2, movement = "complex") -> None:
     
     # Normally distribute start & end coords
     curr_x, curr_y = pg.position()
     rand_x = np.random.normal(x, spread)
     rand_y = np.random.normal(y, spread)
-
-    # Randomise speed
-    speed = np.random.uniform(speed/2, speed)
 
     # Easing functions for random choice of mouse movement
     tweens = [pg.easeOutBack, pg.easeOutQuad, pg.easeOutCubic, pg.easeOutExpo, pg.easeInQuad, pg.easeInCubic, pg.easeInExpo]
@@ -73,7 +70,7 @@ def move(x: int, y: int, speed: float = 0.4, spread: int = 2, movement = "comple
         pg.moveTo(rand_x, rand_y, speed, np.random.choice(tweens))
     
     # Sleep
-    time.sleep(np.random.uniform(0.05, 0.1))
+    time.sleep(np.random.uniform(0.05, 0.075))
 
 
 # Select Option 
@@ -94,7 +91,7 @@ def select(option: int) -> None:
     curr_x, curr_y = pg.position()
     rand_x = curr_x + x_offset
     rand_y = curr_y + y_offset + (y_option_offset * (option - 1)) 
-    move(rand_x, rand_y, speed = 0.2, spread = 1, movement = "simple")
+    move(rand_x, rand_y, speed = 0.2, spread = 1)
     pg.leftClick()
     time.sleep(np.random.uniform(0.05, 0.1))
 
@@ -110,6 +107,18 @@ def bank(col: int, row: int) -> tuple:
     base_x, base_y = 814, 163
     offset_x, offset_y = 72, 55
     return (base_x + (col - 1) * offset_x, base_y + (row - 1) * offset_y)
+
+# Withdraw from a specific bank slot
+def withdraw(col, row):
+
+    x, y = bank(col, row)
+    move(x, y, movement="simple")
+    select(6)
+
+# Close Bank interface
+def close_bank():
+    move(1415, 54)
+    pg.leftClick()
 
 
 def logout():
@@ -148,6 +157,7 @@ def login():
 
 # Drop item
 def drop():
+
     with pg.hold("shift"):
         pg.leftClick(duration = 0.1)
-        time.sleep(0.1)
+        time.sleep(0.05)

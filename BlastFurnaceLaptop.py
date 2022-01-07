@@ -24,7 +24,7 @@ def deposit(coins: str) -> None:
 
 
     # Click Coffer
-    ck.move(1178, 704, speed = 0.3, spread = 0, movement = "simple")
+    ck.move(1178, 704, speed = 0.3, spread = 0)
     pg.leftClick()
     time.sleep(np.random.uniform(1.5, 1.75))
 
@@ -38,11 +38,12 @@ def deposit(coins: str) -> None:
 
 
     # Deposit All Coins
-    ck.move(1300, 744, speed = 0.3, movement = "simple")
+    ck.move(1300, 744, speed = 0.3)
     pg.leftClick()
     deposit_x, deposit_y = (1346, 1121)
-    ck.move(deposit_x, deposit_y, speed = 0.7)
+    ck.move(deposit_x, deposit_y, speed = 0.8)
     pg.leftClick()
+    time.sleep(np.random.uniform(0.5, 1))
     deposit_all()
 
 
@@ -60,7 +61,7 @@ def withdraw_iron() -> None:
 
 def deposit_all():
     deposit_x, deposit_y = (1346, 1121)
-    ck.move(deposit_x, deposit_y, speed = 0.3)
+    ck.move(deposit_x, deposit_y, speed = 0.6)
     pg.leftClick()
 
 
@@ -68,7 +69,7 @@ def drink_stamina():
     
     # Withdraw potion
     stam_x, stam_y = ck.bank(4, 1)
-    ck.move(stam_x, stam_y, speed = 0.3)
+    ck.move(stam_x, stam_y, speed = 0.5)
     pg.leftClick()
 
     # Drink from inventory
@@ -115,6 +116,7 @@ def collect_bars():
     deposit_all()
 
 def bank_to_bars():
+    deposit_all()
     close_bank()
     ck.move(947, 483, spread = 0)
     pg.leftClick()
@@ -137,7 +139,7 @@ def main(n: str):
     for i in range(n):
 
         # Every 10 runs do a bar collection - RNG protection
-        if np.random.uniform(0, 10) > 9:
+        if np.random.uniform(0, 10) > 8.5:
             bank_to_bars()
 
         
@@ -161,4 +163,4 @@ def main(n: str):
 
 
 if __name__ == "__main__":
-    main(10)
+    main(28)

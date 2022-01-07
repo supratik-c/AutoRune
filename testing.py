@@ -3,7 +3,10 @@ import time
 import numpy as np
 import pyautogui as pg
 
-for i in range(20):
-    rands = np.random.uniform(1, 10, 1000)
-    greaters = rands[rands > 9.33]
-    print(len(greaters))
+bank_x, bank_y = ck.bank(2, 1)
+inv_x, inv_y = ck.inventory(2, 1)
+
+ck.move(bank_x, bank_y)
+ck.select(2)
+ck.move(inv_x, inv_y)
+ck.select(8)

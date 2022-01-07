@@ -31,8 +31,7 @@ for i in range(10000):
         # Drop gem
     if np.random.uniform(1, 50) < 5:
         ck.move(gem_x, gem_y)
-        time.sleep(np.random.uniform(0.2, 0.5))
-        ck.select(2)
+        ck.drop()
 
 
     # Mine Western Rock
@@ -43,26 +42,23 @@ for i in range(10000):
     time.sleep(np.random.uniform(1.5, 2))
     ck.select(2)
 
-        # Drop gem
+    # Drop gem
     if np.random.uniform(1, 50) < 5:
         ck.move(gem_x, gem_y)
-        time.sleep(np.random.uniform(0.2, 0.5))
-        ck.select(2)
-
+        ck.drop()
 
     # Mine Northern Rock
     ck.move(nr_x, nr_y)
     time.sleep(np.random.uniform(0.2, 0.5))
     pg.leftClick()
     ck.move(inv_x, inv_y)
-    time.sleep(np.random.uniform(1.5, 2))
+    time.sleep(np.random.uniform(1.5, 1.75))
     ck.select(2)
 
     # Drop gem
     if np.random.uniform(1, 50) < 8:
         ck.move(gem_x, gem_y)
-        time.sleep(np.random.uniform(0.2, 0.5))
-        ck.select(2)
+        ck.drop()
 
 
 
